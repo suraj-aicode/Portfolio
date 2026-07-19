@@ -1,24 +1,32 @@
-import { useRef } from "react";
-import TextReveal from "./TextReveal";
 import gsap from "@/libs/gsap";
+import TextReveal from "./TextReveal";
+import { useRef } from "react";
+import useViewTransition from "@/app/hooks/useViewTransition";
 
-const CARD_W = 300;
-const CARD_H = 380;
+const CARD_W = 400;
+const CARD_H = 520;
 const SCALE = 1.35;
 
 const CarouselCard = ({ project, onHoverStart, onHoverEnd }) => {
-  const imgRef = useRef(null);
   const cardRef = useRef(null);
+  const imgRef = useRef(null);
+
   const numberRef = useRef(null);
   const titleRef = useRef(null);
 
   const onEnter = () => {
     onHoverStart?.();
 
-    gsap.to(imgRef.current, {
+    gsap.to(cardRef.current, {
       width: CARD_W * SCALE,
       height: CARD_H * SCALE,
-      duration: 0.5,
+      duration: 0.4,
+      ease: "power3.out",
+    });
+
+    gsap.to(imgRef.current, {
+      scale: 1,
+      duration: 0.42,
       ease: "power3.out",
     });
 
@@ -29,20 +37,33 @@ const CarouselCard = ({ project, onHoverStart, onHoverEnd }) => {
   const onLeave = () => {
     onHoverEnd?.();
 
-    gsap.to(imgRef.current, {
+    gsap.to(cardRef.current, {
       width: CARD_W,
       height: CARD_H,
-      duration: 0.5,
+      duration: 0.17,
       ease: "power3.out",
     });
 
-    numberRef.current?.reset();
-    titleRef.current?.reset();
+    gsap.to(imgRef.current, {
+      scale: 1.6,
+      duration: 0.19,
+      ease: "power3.out",
+    });
+
+    numberRef.current?.reverse();
+    titleRef.current?.reverse();
+  };
+
+  const { navigateTo } = useViewTransition();
+
+  const handleClick = () => {
+    navigateTo(`/project/${project.slug}`);
   };
 
   return (
     <div
       ref={cardRef}
+      onClick={handleClick}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       style={{
@@ -52,38 +73,39 @@ const CarouselCard = ({ project, onHoverStart, onHoverEnd }) => {
         overflow: "visible",
         cursor: "pointer",
       }}
-      className="relative"
+      className="relative bg-red-300"
     >
       {/* Title Panel */}
-      <div
-        className="titlePanel absolute left-0 pointer-events-none flex flex-col gap-4"
-        style={{
-          bottom: "calc(100% + 3rem)",
-        }}
-      >
-        <TextReveal ref={numberRef} trigger="manual" splitBy="chars">
-          <h3 className="text-base text-[#010101]">{project?.number}</h3>
-        </TextReveal>
 
-        <TextReveal ref={titleRef} trigger="manual" splitBy="words">
-          <h3 className="text-base text-[#010101]">{project?.title}</h3>
+      <div
+        style={{ bottom: "calc(100% + 1.5rem)" }}
+        className="titlePanel absolute left-0 pointer-events-none flex flex-col gap-[0.8rem]"
+      >
+        <TextReveal
+          ref={numberRef}
+          duration="0.25"
+          trigger="manual"
+          splitBy="chars"
+        >
+          <h3 className="text-[1.2rem] text-[#010101]">{project.number}</h3>
+        </TextReveal>
+        <TextReveal
+          ref={titleRef}
+          duration="0.25"
+          trigger="manual"
+          splitBy="words"
+        >
+          <h3 className="text-[1.2rem] text-[#010101]">{project.title}</h3>
         </TextReveal>
       </div>
 
-      {/* Image */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="imageDiv absolute h-full w-full overflow-hidden ">
         <img
+          style={{ transformOrigin: "center center", userSelect: "none" }}
+          className="h-full scale-[1.6] w-full  object-cover "
           ref={imgRef}
-          src={project?.coverImage}
-          alt={project?.title}
-          draggable={false}
-          style={{
-            width: CARD_W,
-            height: CARD_H,
-            transformOrigin: "center center",
-            userSelect: "none",
-          }}
-          className="object-cover"
+          src={project.coverImage}
+          alt={project.title}
         />
       </div>
     </div>

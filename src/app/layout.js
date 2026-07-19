@@ -1,15 +1,34 @@
+import Navbar from "@/components/Navbar";
 import "./globals.css";
 import SmoothScroller from "@/components/SmoothScroller";
 
+import { Inter, JetBrains_Mono } from "next/font/google";
+
+export const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+export const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+});
+
 export const metadata = {
-  title: "Cohot2 Portfolio",
-  description: "My personal portfolio website",
+  title: "Cohort 2.0 Portfolio",
+  description: "My Portfolio Project",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html
+      lang="en"
+      className={`${inter.variable} ${jetbrainsMono.variable}  h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col">
+        <Navbar />
         <SmoothScroller>{children}</SmoothScroller>
       </body>
     </html>
