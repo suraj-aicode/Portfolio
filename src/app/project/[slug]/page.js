@@ -1,7 +1,16 @@
-export default function Page() {
-    return (
-        <div>
-            <h1>Project section</h1>
-        </div>
-    );
+import { projects } from "@/app/data/projects";
+import ProjectPage from "@/components/ProjectPage";
+
+export default async function Page({ params }) {
+  const { slug } = await params;
+
+  const index = projects.findIndex((p) => p.slug === slug);
+  const project = projects[index];
+  const nextProject = projects[(index + 1) % projects.length];
+
+  return (
+    <>
+      <ProjectPage project={project} nextProject={nextProject} />
+    </>
+  );
 }
